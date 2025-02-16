@@ -13,7 +13,9 @@ import (
 
 var secret []byte
 
+// Валидатор получаемого токена
 func ValidateToken(c *gin.Context) {
+	// Извлечение нужного заголовка
 	authHeader := c.GetHeader("Authorization")
 	if authHeader == "" {
 		abortValidation(c, "no authorization header")
@@ -21,6 +23,7 @@ func ValidateToken(c *gin.Context) {
 		return
 	}
 
+	//Удаление префикса
 	tokenString := strings.TrimPrefix(authHeader, "Bearer ")
 	if tokenString == authHeader {
 		abortValidation(c, "invalid token format")
@@ -28,6 +31,7 @@ func ValidateToken(c *gin.Context) {
 		return
 	}
 
+	// Конкретно валидация
 	token, err := jwt.Parse(tokenString, extractSecret(secret))
 	if err != nil || !token.Valid {
 		abortValidation(c, "token validation error")
@@ -46,6 +50,7 @@ func ValidateToken(c *gin.Context) {
 		return
 	}
 
+	// Извлечения составляющих токена
 	claims, ok := token.Claims.(jwt.MapClaims)
 	if !ok {
 		abortValidation(c, "token validation error")
@@ -55,6 +60,7 @@ func ValidateToken(c *gin.Context) {
 		return
 	}
 
+	// Извлечение юзернейма из токена
 	username, ok := claims["username"].(string)
 	if !ok {
 		abortValidation(c, "username claim is missing")
@@ -64,17 +70,21 @@ func ValidateToken(c *gin.Context) {
 		return
 	}
 
+	// Занесение юзернейма в контекст операции
 	if _, ok := token.Claims.(jwt.MapClaims); ok && token.Valid {
 		c.Set("username", username)
 	}
 
+	// Переход к основной логике
 	c.Next()
 }
 
+// "Занесение в логику" секретного слова
 func GenerateSecret(keyword string) {
 	secret = []byte(keyword)
 }
 
+// Извлечения секрета
 func extractSecret(secret []byte) jwt.Keyfunc {
 	return func(token *jwt.Token) (interface{}, error) {
 		if _, ok := token.Method.(*jwt.SigningMethodHMAC); !ok {
@@ -87,6 +97,7 @@ func extractSecret(secret []byte) jwt.Keyfunc {
 	}
 }
 
+// Отказ в обслуживании в случае неудачи
 func abortValidation(c *gin.Context, message string) {
 	c.JSON(http.StatusUnauthorized, gin.H{"error": message})
 	c.Abort()

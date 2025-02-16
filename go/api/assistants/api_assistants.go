@@ -59,6 +59,8 @@ func ReadBodyData(c *gin.Context) (int, map[string]string, error) {
 	return http.StatusOK, result, nil
 }
 
+// Извлечение юзернейма из контекста gin
+// Эту функцию затребовал линтер (необходима проверка существования юзернейма)
 func ExtractUsername(ctx *gin.Context) (username string, ok bool) {
 	username, ok = ctx.Keys["username"].(string)
 	if !ok {

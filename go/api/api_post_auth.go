@@ -16,6 +16,7 @@ import (
 
 var secret []byte
 
+// API - POST - получение JWT токена
 func PostAuth(db *gorm.DB, username, password string) (code int, resp string, err error) {
 	var new bool
 
@@ -28,9 +29,11 @@ func PostAuth(db *gorm.DB, username, password string) (code int, resp string, er
 	}
 	var user models.User
 
+	// Установка факта существования пользователя в системе
 	result := db.First(&user, "login = ?", username)
 	if errors.Is(result.Error, gorm.ErrRecordNotFound) {
 		new = true
+		// Если пользователя нет в системе - он в ней автоматически регистрируется
 		user, err = signInUser(db, username, password)
 		if err != nil {
 			cl.Log(logrus.ErrorLevel, "Internal server error", map[string]interface{}{
@@ -45,8 +48,10 @@ func PostAuth(db *gorm.DB, username, password string) (code int, resp string, er
 		return http.StatusInternalServerError, "", errors.New("error while searching user")
 	}
 
-	// Можно убрать проверку если чел регается
+	// Если пользователя в эту итерацию не регистрировали, сравниваем хеши паролей, полученные
+	// из бд и от пользователя
 	if new || comparePasswords(user.PassHash, password) {
+		// Вызов генератора токена
 		token, err := generateToken(username)
 		if err != nil {
 			cl.Log(logrus.ErrorLevel, "Internal server error", map[string]interface{}{
@@ -77,15 +82,17 @@ func PostAuth(db *gorm.DB, username, password string) (code int, resp string, er
 	return http.StatusUnauthorized, "", errors.New("wrong password")
 }
 
+// Генератор и подпись токена
 func generateToken(username string) (string, error) {
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, jwt.MapClaims{
 		"username": username,
-		"exp":      time.Now().Add(time.Hour).Unix(),
+		"exp":      time.Now().Add(time.Hour * 720).Unix(),
 	})
 
 	return token.SignedString(secret)
 }
 
+// Регистрация пользователя
 func signInUser(db *gorm.DB, username, password string) (models.User, error) {
 	var newUser models.User
 	newUser.Login = username
@@ -109,6 +116,7 @@ func signInUser(db *gorm.DB, username, password string) (models.User, error) {
 		return newUser, errors.New("error while creating users in database")
 	}
 
+	// Кладём косарик в кошелёк нового пользователя
 	if err := db.Table("users_cash").Create(models.UserCash{
 		Login: username,
 		Cash:  1000,
@@ -123,16 +131,19 @@ func signInUser(db *gorm.DB, username, password string) (models.User, error) {
 	return newUser, nil
 }
 
+// Хеширование пароля
 func hashPassword(password string) (string, error) {
 	bytes, err := bcrypt.GenerateFromPassword([]byte(password), bcrypt.DefaultCost)
 	return string(bytes), err
 }
 
+// Сравнение хешей
 func comparePasswords(hash, password string) bool {
 	err := bcrypt.CompareHashAndPassword([]byte(hash), []byte(password))
 	return err == nil
 }
 
+// Чтение секретного слова из переменных окружения
 func GenerateSecret(keyword string) {
 	secret = []byte(keyword)
 }

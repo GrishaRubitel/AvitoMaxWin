@@ -13,6 +13,7 @@ var logChannel = make(chan logrus.Entry, 100)
 var log = logrus.New()
 var debugLog = logrus.New()
 
+// Создание log файлов и запуск пишущей горутины
 func InitCurloger(logFilePath string) {
 	logDir := filepath.Dir(logFilePath)
 
@@ -49,6 +50,7 @@ func InitCurloger(logFilePath string) {
 	go processLogs(file, debugFile)
 }
 
+// Пишущий процесс
 func processLogs(file *os.File, debugFile *os.File) {
 	defer file.Close()
 	defer debugFile.Close()
@@ -63,6 +65,7 @@ func processLogs(file *os.File, debugFile *os.File) {
 	}
 }
 
+// Функция запуска процесса записи в файл
 func Log(level logrus.Level, message string, fields map[string]interface{}) {
 	entry := logrus.Entry{
 		Time:    time.Now(),

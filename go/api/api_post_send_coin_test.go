@@ -14,12 +14,12 @@ func TestPostSendCoin(t *testing.T) {
 	var sender string
 	var amount string
 
-	envMap, err := godotenv.Read("./../../.env")
+	envMap, err := godotenv.Read("./../.env")
 	if err != nil {
 		return
 	}
 
-	db, err := gorm.Open(postgres.Open(envMap["POSTGRES_CONN"]), &gorm.Config{})
+	db, err := gorm.Open(postgres.Open(envMap["POSTGRES_LOCAL_CONN"]), &gorm.Config{})
 	if err != nil {
 		log.Fatal(err)
 	}

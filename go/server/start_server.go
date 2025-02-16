@@ -12,12 +12,14 @@ import (
 	"gorm.io/gorm"
 )
 
+// Сборка сервера API
 func StartServer(envMap map[string]string, db *gorm.DB) *gin.Engine {
 	api.GenerateSecret(envMap["JWT_SECRET"])
 	validator.GenerateSecret(envMap["JWT_SECRET"])
 
 	router := gin.Default()
 
+	// Подбор подходяших прав CORS
 	router.Use(cors.New(cors.Config{
 		AllowMethods:    []string{"GET", "POST"},
 		AllowHeaders:    []string{"Origin", "Content-Type", "Authorization"},
@@ -27,6 +29,7 @@ func StartServer(envMap map[string]string, db *gorm.DB) *gin.Engine {
 
 	apis := router.Group("/api")
 
+	// Валидация токена - извлечение юзернейма - выполнение логики
 	apis.GET("/info", validator.ValidateToken, func(ctx *gin.Context) {
 		username, ok := assistants.ExtractUsername(ctx)
 		if ok {
@@ -35,6 +38,7 @@ func StartServer(envMap map[string]string, db *gorm.DB) *gin.Engine {
 		}
 	})
 
+	// Валидация токена - извлечение юзернейма и тела запроса - выполнение логики
 	apis.POST("/sendCoin", validator.ValidateToken, func(ctx *gin.Context) {
 		code, params, err := assistants.ReadBodyData(ctx)
 		if err != nil {
@@ -60,6 +64,7 @@ func StartServer(envMap map[string]string, db *gorm.DB) *gin.Engine {
 		}
 	})
 
+	// Валидация токена - извлечение юзернейма и названия предмета - выполнение логики
 	apis.GET("/buy/:item", validator.ValidateToken, func(ctx *gin.Context) {
 		username, ok := assistants.ExtractUsername(ctx)
 		if ok {
@@ -69,6 +74,7 @@ func StartServer(envMap map[string]string, db *gorm.DB) *gin.Engine {
 		}
 	})
 
+	// Извлечение тела запроса/данных пользователя - выполнение логики
 	apis.POST("/auth", func(ctx *gin.Context) {
 		code, params, err := assistants.ReadBodyData(ctx)
 		if err != nil {

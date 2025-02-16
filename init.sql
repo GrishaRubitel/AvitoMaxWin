@@ -1,16 +1,16 @@
 CREATE TABLE users (
-	login varchar NOT NULL,
+	"login" varchar NOT NULL,
 	pass_hash varchar NOT NULL,
-	CONSTRAINT users_pk PRIMARY KEY (login),
-	CONSTRAINT users_unique UNIQUE (login)
+	CONSTRAINT users_pk PRIMARY KEY ("login"),
+	CONSTRAINT users_unique UNIQUE ("login")
 );
 
 CREATE TABLE users_cash (
-	login varchar NOT NULL,
+	"login" varchar NOT NULL,
 	cash int4 DEFAULT 1000 NULL,
-	CONSTRAINT users_cash_pk PRIMARY KEY (login),
+	CONSTRAINT users_cash_pk PRIMARY KEY ("login"),
 	CONSTRAINT users_cash_check CHECK (cash >= 0),
-	CONSTRAINT users_cash_users_fk FOREIGN KEY (login) REFERENCES users(login) ON DELETE CASCADE ON UPDATE CASCADE
+	CONSTRAINT users_cash_users_fk FOREIGN KEY ("login") REFERENCES users("login") ON DELETE CASCADE ON UPDATE CASCADE
 );
 
 CREATE TABLE "catalog" (
@@ -21,12 +21,12 @@ CREATE TABLE "catalog" (
 );
 
 CREATE TABLE inventory (
-	login varchar NOT NULL,
+	"login" varchar NOT NULL,
 	item varchar NOT NULL,
 	quantity int4 DEFAULT 1 NOT NULL
 	CONSTRAINT inventory_check CHECK (quantity > 0),
-	CONSTRAINT inventory_pk PRIMARY KEY (login,item),
-	CONSTRAINT inventory_users_fk FOREIGN KEY (login) REFERENCES users(login) ON DELETE SET DEFAULT ON UPDATE CASCADE,
+	CONSTRAINT inventory_pk PRIMARY KEY ("login",item),
+	CONSTRAINT inventory_users_fk FOREIGN KEY ("login") REFERENCES users("login") ON DELETE SET DEFAULT ON UPDATE CASCADE,
 	CONSTRAINT inventory_catalog_fk FOREIGN KEY (item) REFERENCES "catalog"(item) ON DELETE SET DEFAULT ON UPDATE CASCADE
 );
 
