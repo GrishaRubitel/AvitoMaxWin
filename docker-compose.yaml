@@ -1,11 +1,10 @@
-version: '3'
 services:
   postgres_amx:
     image: postgres
     container_name: postgres_amx
     shm_size: 128mb
     environment:
-      POSTGRES_HOST: "${POSTGRES_HOST}"
+      POSTGRES_HOST: "${LOCALHOST}"
       POSTGRES_PORT: "${POSTGRES_PORT}"
       POSTGRES_PASSWORD: "${POSTGRES_PASSWORD}"
       POSTGRES_USER: "${POSTGRES_USERNAME}"
@@ -17,7 +16,7 @@ services:
     command: -p ${POSTGRES_PORT}
     volumes:
       - ./init.sql:/docker-entrypoint-initdb.d/init.sql
-      - /private/var/lib/postgres_amx:/var/lib/postgresql
+      # - /private/var/lib/postgres_amx:/var/lib/postgresql
     restart: unless-stopped
     networks:
       - db_net
@@ -32,6 +31,20 @@ services:
       - 5454:5454
     networks:
       - db_net_admin
+  go_server:
+    build:
+      context: ./go
+      dockerfile: Dockerfile
+    container_name: go_server
+    depends_on:
+      - postgres_amx
+    ports:
+      - "8080:8080"
+    restart: unless-stopped
+    networks:
+      - db_net
+    env_file:
+      - ./.env
 networks:
   db_net:
     driver: bridge

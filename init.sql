@@ -1,7 +1,3 @@
---------------------------------------------------
-----------------------DDL-------------------------
---------------------------------------------------
-
 CREATE TABLE users (
 	login varchar NOT NULL,
 	pass_hash varchar NOT NULL,
@@ -49,10 +45,6 @@ CREATE TABLE transactions (
 	CONSTRAINT transactions_sender_fkey FOREIGN KEY (sender) REFERENCES users(login) ON DELETE SET NULL
 );
 
---------------------------------------------------
-----------------------DML-------------------------
---------------------------------------------------
-
 INSERT INTO "catalog" (item, price) VALUES
 ('t-shirt', 80),
 ('cup', 20),
@@ -64,7 +56,7 @@ INSERT INTO "catalog" (item, price) VALUES
 ('socks', 10),
 ('wallet', 50),
 ('pink-hoody', 500),
-('cheesborg', 2147483647)
+('cheesborg', 2147483647);
 
 INSERT INTO users (login, pass_hash) VALUES
 ('joe_peach', '$2a$10$JB7iUgigSC7t.zbh2aPGFuVpI57.ILjORdYoo6qaSkMNNWuB92P6e'),
@@ -74,7 +66,7 @@ INSERT INTO users (login, pass_hash) VALUES
 ('babs', '$2a$10$8l8IGcA4te6f7obP505lFOSblm5THp8wfYR9Z9Binf8bAPQX7MM2u');
 
 INSERT INTO users_cash (login, cash) VALUES
-('joe_peach', 5000), ('deadp47', 5000), ('bobs', 5000), ('bebs', 5000), ('babs', 5000);
+('joe_peach', 1000), ('deadp47', 1000), ('bobs', 1000), ('bebs', 1000), ('babs', 1000);
 
 INSERT INTO transactions (sender, recipient, amount, transaction_type, created_at) VALUES
 ('joe_peach', 'deadp47', 200, 'transfer', NOW()),
@@ -97,10 +89,6 @@ INSERT INTO transactions (sender, amount, transaction_type, item, created_at) VA
 
 INSERT INTO inventory (login, item, quantity) VALUES
 ('joe_peach', 't-shirt', 1), ('deadp47', 'cup', 1), ('bobs', 'book', 1), ('bebs', 'pen', 413), ('babs', 'powerbank', 7);
-
-----------------------------------------------------------
----------------------SQL Functions------------------------
-----------------------------------------------------------
 
 create or replace function get_user_cash(username varchar) 
 returns int as 
