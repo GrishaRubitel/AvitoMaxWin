@@ -99,7 +99,7 @@ func main() {
 func extractUsername(ctx *gin.Context) (username string, ok bool) {
 	username, ok = ctx.Keys["username"].(string)
 	if !ok {
-		cl.Log(logrus.WarnLevel, "Failed to extract username from context", map[string]interface{}{})
+		cl.Log(logrus.ErrorLevel, "Failed to extract username from context", map[string]interface{}{})
 		return "", false
 	}
 

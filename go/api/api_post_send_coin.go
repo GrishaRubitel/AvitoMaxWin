@@ -14,15 +14,15 @@ func PostSendCoin(db *gorm.DB, recipient, sender, amount string) (code int, err 
 	coins, err := strconv.Atoi(amount)
 	if err != nil {
 		cl.Log(logrus.ErrorLevel, "money conversion error", map[string]interface{}{
-			"error":  err.Error,
+			"error":  err,
 			"amount": coins,
 		})
 		return http.StatusInternalServerError, errors.New("internal server error")
 	}
 
 	if err := db.Exec("SELECT send_coins(?, ?, ?)", sender, recipient, coins).Error; err != nil {
-		cl.Log(logrus.InfoLevel, "error while transfering item", map[string]interface{}{
-			"error":     err.Error,
+		cl.Log(logrus.ErrorLevel, "error while transfering item", map[string]interface{}{
+			"error":     err,
 			"sender":    sender,
 			"recipient": recipient,
 			"amount":    coins,

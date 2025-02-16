@@ -45,7 +45,7 @@ func PostAuth(db *gorm.DB, username, password string) (code int, resp string, er
 		token, err := generateToken(username)
 		if err != nil {
 			cl.Log(logrus.ErrorLevel, "Internal server error", map[string]interface{}{
-				"error": err.Error(),
+				"error": err,
 			})
 			return http.StatusInternalServerError, "", errors.New("error while generating jwt token")
 		}
@@ -76,7 +76,7 @@ func signInUser(db *gorm.DB, username, password string) (models.User, error) {
 	hashedPass, err := hashPassword(password)
 	if err != nil {
 		cl.Log(logrus.ErrorLevel, "error while hashing password", map[string]interface{}{
-			"error":    err.Error(),
+			"error":    err,
 			"username": username,
 			"password": password,
 		})
@@ -86,7 +86,7 @@ func signInUser(db *gorm.DB, username, password string) (models.User, error) {
 
 	if err := db.Create(&newUser).Error; err != nil {
 		cl.Log(logrus.ErrorLevel, "error adding user in user databse", map[string]interface{}{
-			"error":    err.Error(),
+			"error":    err,
 			"username": username,
 		})
 		return newUser, errors.New("error while creating users in database")
@@ -97,7 +97,7 @@ func signInUser(db *gorm.DB, username, password string) (models.User, error) {
 		Cash:  1000,
 	}).Error; err != nil {
 		cl.Log(logrus.ErrorLevel, "error adding user in user_cash databse", map[string]interface{}{
-			"error":    err.Error(),
+			"error":    err,
 			"username": username,
 		})
 		return newUser, errors.New("error while creating user in database")

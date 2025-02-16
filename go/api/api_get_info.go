@@ -37,7 +37,7 @@ func GetInfo(db *gorm.DB, username string) (code int, resp string, err error) {
 	if errors.Is(err, gorm.ErrRecordNotFound) {
 		cl.Log(logrus.InfoLevel, "Username's cash not in db", map[string]interface{}{
 			"username": username,
-			"error":    err.Error,
+			"error":    err,
 		})
 		return http.StatusInternalServerError, "", errors.New("error while searching user")
 	}
@@ -60,7 +60,7 @@ func GetInfo(db *gorm.DB, username string) (code int, resp string, err error) {
 	jsonedData, err := json.MarshalIndent(response, "", " ")
 	if err != nil {
 		cl.Log(logrus.ErrorLevel, "Error while parsing transaction in JSON", map[string]interface{}{
-			"error": err.Error(),
+			"error": err,
 			"data":  response,
 		})
 		return http.StatusInternalServerError, "", errors.New("internal server error")
@@ -75,7 +75,7 @@ func selectTransactions[T any](db *gorm.DB, username, who, where string) ([]T, e
 	err := db.Select(who, "t.amount").Table("transactions t").Where(where, username).Scan(&transactions).Error
 	if err != nil && !errors.Is(err, gorm.ErrRecordNotFound) {
 		cl.Log(logrus.WarnLevel, "Error while searching for transactions in db", map[string]interface{}{
-			"error":    err.Error(),
+			"error":    err,
 			"username": username,
 		})
 		return nil, errors.New("internal server error")
@@ -88,7 +88,7 @@ func selectInventory(db *gorm.DB, username string) (inventory []models.ItemInfo,
 	err = db.Select("i.item, i.quantity").Table("inventory i").Where("i.login = ?", username).Scan(&inventory).Error
 	if err != nil && !errors.Is(err, gorm.ErrRecordNotFound) {
 		cl.Log(logrus.InfoLevel, "Error while searching for inventory in db", map[string]interface{}{
-			"error":    err.Error(),
+			"error":    err,
 			"username": username,
 		})
 		return nil, errors.New("internal server error")
