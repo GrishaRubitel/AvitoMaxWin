@@ -15,7 +15,7 @@ import (
 
 var secret []byte
 
-func ApiPostAuth(db *gorm.DB, username, password string) (code int, resp string, err error) {
+func PostAuth(db *gorm.DB, username, password string) (code int, resp string, err error) {
 	if username == "" || password == "" {
 		cl.Log(logrus.InfoLevel, "Wrong username or password", map[string]interface{}{
 			"username": username,
@@ -48,16 +48,16 @@ func ApiPostAuth(db *gorm.DB, username, password string) (code int, resp string,
 				"error": err.Error(),
 			})
 			return http.StatusInternalServerError, "", errors.New("error while generating jwt token")
-		} else {
-			return http.StatusOK, token, nil
 		}
-	} else {
-		cl.Log(logrus.WarnLevel, "Error while comparing password hashs", map[string]interface{}{
-			"password from db":     user.PassHash,
-			"password from client": password,
-		})
-		return http.StatusUnauthorized, "", errors.New("wrong password")
+
+		return http.StatusOK, token, nil
 	}
+
+	cl.Log(logrus.WarnLevel, "Error while comparing password hashs", map[string]interface{}{
+		"password from db":     user.PassHash,
+		"password from client": password,
+	})
+	return http.StatusUnauthorized, "", errors.New("wrong password")
 }
 
 func generateToken(username string) (string, error) {

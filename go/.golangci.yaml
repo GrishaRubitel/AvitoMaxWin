@@ -1,0 +1,26 @@
+run:
+  timeout: 10m          # Максимальное время выполнения (на всякий побольше поставил, но хватает и минуты (вроде))
+  issues-exit-code: 1   # Код выхода
+
+linters:
+  enable:
+    - errcheck       # Проверяет пропущенные обработки ошибок
+    - gosimple       # Упрощает код
+    - govet          # Встроенный линтер
+    - staticcheck    # Ищет возможные баги
+    - unused         # Ищет неиспользуемые функции или переменные
+    - revive         # В 6 раз быстрее golint
+    - gocritic       # Ищет сложные ошибки
+    - gosec          # Ищет ошибки безопасности
+
+linters-settings:
+  errcheck:
+    check-type-assertions: true   # Проверяет приведения типов
+    check-blank: true             # Проверяет прощенные андерскором обработки ошибок
+
+exclude:
+  - ".*_test\\.go"   # Отключаем проверку тест-файлов
+
+output:
+  formats: colored-line-number      # Цветастый вывод строк в консоль
+  print-issued-lines: true          # Показ критической строки кода (ошибки)

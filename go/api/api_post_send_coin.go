@@ -10,7 +10,7 @@ import (
 	"gorm.io/gorm"
 )
 
-func ApiPostSendCoin(db *gorm.DB, recipient, sender, amount string) (code int, err error) {
+func PostSendCoin(db *gorm.DB, recipient, sender, amount string) (code int, err error) {
 	coins, err := strconv.Atoi(amount)
 	if err != nil {
 		cl.Log(logrus.ErrorLevel, "money conversion error", map[string]interface{}{
@@ -28,7 +28,7 @@ func ApiPostSendCoin(db *gorm.DB, recipient, sender, amount string) (code int, e
 			"amount":    coins,
 		})
 		return http.StatusBadRequest, err
-	} else {
-		return http.StatusOK, nil
 	}
+
+	return http.StatusOK, nil
 }

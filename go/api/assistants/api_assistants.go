@@ -12,8 +12,6 @@ import (
 	"github.com/sirupsen/logrus"
 )
 
-var errWPUD string = "error while processing client data"
-
 // Возвращает response клиенту
 func ResponseReturner(code int, resp string, err error, c *gin.Context) {
 	if err != nil {
@@ -32,14 +30,14 @@ func ReadBodyData(c *gin.Context) (int, map[string]string, error) {
 		cl.Log(logrus.ErrorLevel, "error while reading request body", map[string]interface{}{
 			"error": err,
 		})
-		return http.StatusInternalServerError, nil, errors.New(errWPUD)
+		return http.StatusInternalServerError, nil, errors.New("error while processing client data")
 	}
 
 	if err := json.Unmarshal(body, &bodyData); err != nil {
 		cl.Log(logrus.ErrorLevel, "error while unmarshaling json", map[string]interface{}{
 			"error": err,
 		})
-		return http.StatusInternalServerError, nil, errors.New(errWPUD)
+		return http.StatusInternalServerError, nil, errors.New("error while processing client data")
 	}
 
 	result := make(map[string]string)
@@ -54,7 +52,7 @@ func ReadBodyData(c *gin.Context) (int, map[string]string, error) {
 			cl.Log(logrus.ErrorLevel, "unsupported value type - "+key, map[string]interface{}{
 				"error": err,
 			})
-			return http.StatusBadRequest, nil, errors.New(errWPUD)
+			return http.StatusBadRequest, nil, errors.New("error while processing client data")
 		}
 	}
 

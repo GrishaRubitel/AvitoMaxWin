@@ -12,7 +12,7 @@ import (
 	"gorm.io/gorm"
 )
 
-func ApiGetInfo(db *gorm.DB, username string) (code int, resp string, err error) {
+func GetInfo(db *gorm.DB, username string) (code int, resp string, err error) {
 	var user models.User
 
 	result := db.First(&user, "login = ?", username)

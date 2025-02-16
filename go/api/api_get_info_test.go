@@ -11,7 +11,7 @@ import (
 	"gorm.io/gorm"
 )
 
-func TestApiGetInfo(t *testing.T) {
+func TestGetInfo(t *testing.T) {
 	var user string
 
 	envMap, err := godotenv.Read("./../../.env")
@@ -25,13 +25,13 @@ func TestApiGetInfo(t *testing.T) {
 	}
 
 	user = "joe_peach"
-	_, _, err = ApiGetInfo(db, user)
+	_, _, err = GetInfo(db, user)
 	if err != nil {
 		t.Errorf("unsuccessful atempt to get info about %v", user)
 	}
 
 	user = "ozon671games"
-	_, _, err = ApiGetInfo(db, user)
+	_, _, err = GetInfo(db, user)
 	if err == nil {
 		t.Errorf("successful atempt to get info about %v", user)
 	}

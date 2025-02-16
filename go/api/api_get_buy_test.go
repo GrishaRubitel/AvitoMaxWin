@@ -10,7 +10,7 @@ import (
 	"gorm.io/gorm"
 )
 
-func TestApiGetBuy(t *testing.T) {
+func TestGetBuy(t *testing.T) {
 	envMap, err := godotenv.Read("./../../.env")
 	if err != nil {
 		return
@@ -23,28 +23,28 @@ func TestApiGetBuy(t *testing.T) {
 
 	item := "pen"
 	user := "joe_peach"
-	code, err := ApiGetBuy(db, item, user)
+	code, err := GetBuy(db, item, user)
 	if code != http.StatusOK && err != nil {
 		t.Errorf("Unsuccessful atempt to buy item %v by %v, error - %v", item, user, err)
 	}
 
 	item = "pencil"
 	user = "joe_peach"
-	code, err = ApiGetBuy(db, item, user)
+	code, err = GetBuy(db, item, user)
 	if code == http.StatusOK && err == nil {
 		t.Errorf("Successful atempt to buy unexisting item %v by %v", item, user)
 	}
 
 	item = "cheesborg"
 	user = "joe_peach"
-	code, err = ApiGetBuy(db, item, user)
+	code, err = GetBuy(db, item, user)
 	if code == http.StatusOK && err == nil {
 		t.Errorf("Successful atempt to buy expensive item %v by %v", item, user)
 	}
 
 	item = "pen"
 	user = "ozon671games"
-	code, err = ApiGetBuy(db, item, user)
+	code, err = GetBuy(db, item, user)
 	if code == http.StatusOK && err == nil {
 		t.Errorf("Unsuccessful atempt to buy item %v by unexisting %v", item, user)
 	}

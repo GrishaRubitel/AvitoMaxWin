@@ -50,8 +50,11 @@ func main() {
 	apis := router.Group("/api")
 
 	apis.GET("/info", validator.ValidateToken, func(ctx *gin.Context) {
-		code, resp, err := api.ApiGetInfo(db, ctx.Keys["username"].(string))
-		assistants.ResponseReturner(code, resp, err, ctx)
+		username, ok := extractUsername(ctx)
+		if ok {
+			code, resp, err := api.GetInfo(db, username)
+			assistants.ResponseReturner(code, resp, err, ctx)
+		}
 	})
 
 	apis.POST("/sendCoin", validator.ValidateToken, func(ctx *gin.Context) {
@@ -60,14 +63,20 @@ func main() {
 			assistants.ResponseReturner(code, "", err, ctx)
 		}
 
-		code, err = api.ApiPostSendCoin(db, params["toUser"], ctx.Keys["username"].(string), params["amount"])
-		assistants.ResponseReturner(code, "", err, ctx)
+		username, ok := extractUsername(ctx)
+		if ok {
+			code, err = api.PostSendCoin(db, params["toUser"], username, params["amount"])
+			assistants.ResponseReturner(code, "", err, ctx)
+		}
 	})
 
 	apis.GET("/buy/:item", validator.ValidateToken, func(ctx *gin.Context) {
-		item := ctx.Param("item")
-		code, err := api.ApiGetBuy(db, item, ctx.Keys["username"].(string))
-		assistants.ResponseReturner(code, "", err, ctx)
+		username, ok := extractUsername(ctx)
+		if ok {
+			item := ctx.Param("item")
+			code, err := api.GetBuy(db, item, username)
+			assistants.ResponseReturner(code, "", err, ctx)
+		}
 	})
 
 	apis.POST("/auth", func(ctx *gin.Context) {
@@ -76,9 +85,23 @@ func main() {
 			assistants.ResponseReturner(code, "", err, ctx)
 		}
 
-		code, resp, err := api.ApiPostAuth(db, params["username"], params["password"])
+		code, resp, err := api.PostAuth(db, params["username"], params["password"])
 		assistants.ResponseReturner(code, resp, err, ctx)
 	})
 
-	router.Run(envMap["APPLICATION_URL"])
+	if err := router.Run(envMap["APPLICATION_URL"]); err != nil {
+		cl.Log(logrus.ErrorLevel, "Failed to start the server", map[string]interface{}{
+			"error": err,
+		})
+	}
+}
+
+func extractUsername(ctx *gin.Context) (username string, ok bool) {
+	username, ok = ctx.Keys["username"].(string)
+	if !ok {
+		cl.Log(logrus.WarnLevel, "Failed to extract username from context", map[string]interface{}{})
+		return "", false
+	}
+
+	return username, true
 }
