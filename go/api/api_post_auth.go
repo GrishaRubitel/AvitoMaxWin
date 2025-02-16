@@ -63,7 +63,7 @@ func ApiPostAuth(db *gorm.DB, username, password string) (code int, resp string,
 func generateToken(username string) (string, error) {
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, jwt.MapClaims{
 		"username": username,
-		"exp":      time.Now().Add(time.Hour).Unix(), // Время жизни - одна минута
+		"exp":      time.Now().Add(time.Hour).Unix(),
 	})
 
 	return token.SignedString(secret)
@@ -92,7 +92,7 @@ func signInUser(db *gorm.DB, username, password string) (models.User, error) {
 		return newUser, errors.New("error while creating users in database")
 	}
 
-	if err := db.Create(models.UserCash{
+	if err := db.Table("users_cash").Create(models.UserCash{
 		Login: username,
 		Cash:  1000,
 	}).Error; err != nil {

@@ -63,7 +63,8 @@ INSERT INTO "catalog" (item, price) VALUES
 ('umbrella', 200),
 ('socks', 10),
 ('wallet', 50),
-('pink-hoody', 500);
+('pink-hoody', 500),
+('cheesborg', 2147483647)
 
 INSERT INTO users (login, pass_hash) VALUES
 ('joe_peach', '$2a$10$JB7iUgigSC7t.zbh2aPGFuVpI57.ILjORdYoo6qaSkMNNWuB92P6e'),

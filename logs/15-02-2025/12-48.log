@@ -1,0 +1,2 @@
+time="2025-02-15T12:49:26+03:00" level=error msg="error while buying item" error="<nil>" item=pen username=joe_peach
+time="2025-02-15T12:49:55+03:00" level=error msg="error while buying item" error="<nil>" item=pen username=joe_peach

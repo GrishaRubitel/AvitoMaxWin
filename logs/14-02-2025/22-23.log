@@ -1,0 +1,3 @@
+time="2025-02-14T22:23:55+03:00" level=warning msg="Error while comparing password hashs" password from client=123321133 password from db="$2a$10$JB7iUgigSC7t.zbh2aPGFuVpI57.ILjORdYoo6qaSkMNNWuB92P6e"
+time="2025-02-14T22:24:21+03:00" level=warning msg="Wrong toke" expiration="2025-02-14 23:24:02 +0300 MSK" user=joe_peach
+time="2025-02-14T22:24:24+03:00" level=warning msg="Wrong toke" expiration="2025-02-14 23:24:02 +0300 MSK" user=joe_peach
