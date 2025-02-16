@@ -14,8 +14,6 @@ import (
 var secret []byte
 
 func ValidateToken(c *gin.Context) {
-	var username string
-
 	authHeader := c.GetHeader("Authorization")
 	if authHeader == "" {
 		abortValidation(c, "no authorization header")
@@ -41,28 +39,27 @@ func ValidateToken(c *gin.Context) {
 			return
 		}
 
-		claims, ok := token.Claims.(jwt.MapClaims)
-		if !ok {
-			abortValidation(c, "token validation error")
-			cl.Log(logrus.ErrorLevel, "Failed to parse token claims", map[string]interface{}{
-				"error": err,
-			})
-			return
-		}
-
-		username, ok = claims["username"].(string)
-		if !ok {
-			abortValidation(c, "username claim is missing or not a string")
-			cl.Log(logrus.ErrorLevel, "Failed to parse token claims", map[string]interface{}{
-				"error": err,
-			})
-			return
-		}
-
 		cl.Log(logrus.WarnLevel, "Wrong token", map[string]interface{}{
-			"user":       username,
 			"expiration": time,
 			"error":      err,
+		})
+		return
+	}
+
+	claims, ok := token.Claims.(jwt.MapClaims)
+	if !ok {
+		abortValidation(c, "token validation error")
+		cl.Log(logrus.ErrorLevel, "Failed to parse token claims", map[string]interface{}{
+			"error": err,
+		})
+		return
+	}
+
+	username, ok := claims["username"].(string)
+	if !ok {
+		abortValidation(c, "username claim is missing")
+		cl.Log(logrus.ErrorLevel, "Failed to parse token claims", map[string]interface{}{
+			"error": err,
 		})
 		return
 	}

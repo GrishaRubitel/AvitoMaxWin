@@ -22,7 +22,7 @@ func GetInfo(db *gorm.DB, username string) (code int, resp string, err error) {
 			"username": username,
 			"error":    result.Error,
 		})
-		return http.StatusUnauthorized, "", errors.New("yuor username not exist")
+		return http.StatusUnauthorized, "", errors.New("your username not exist")
 	} else if result.Error != nil {
 		cl.Log(logrus.ErrorLevel, "Internal server error", map[string]interface{}{
 			"error": result.Error,

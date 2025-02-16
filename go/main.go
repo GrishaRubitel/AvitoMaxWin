@@ -5,7 +5,6 @@ import (
 	assistants "avitomaxwin/api/assistants"
 	validator "avitomaxwin/api/validator"
 	cl "avitomaxwin/curloger"
-	"log"
 	"time"
 
 	"github.com/gin-contrib/cors"
@@ -24,7 +23,6 @@ func main() {
 		cl.Log(logrus.FatalLevel, "error while reading .env file", map[string]interface{}{
 			"error": err,
 		})
-		log.Fatal(err)
 	}
 
 	db, err := gorm.Open(postgres.Open(envMap["POSTGRES_CONN"]), &gorm.Config{})
@@ -32,7 +30,6 @@ func main() {
 		cl.Log(logrus.FatalLevel, "error while establishing db connection", map[string]interface{}{
 			"error": err,
 		})
-		log.Fatal(err)
 	}
 
 	api.GenerateSecret(envMap["JWT_SECRET"])

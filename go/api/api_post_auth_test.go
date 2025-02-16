@@ -1,7 +1,6 @@
 package api
 
 import (
-	"fmt"
 	"log"
 	"testing"
 	"time"
@@ -19,9 +18,6 @@ func TestPostAuth(t *testing.T) {
 	if err != nil {
 		return
 	}
-
-	secret := envMap["JWT_SECRET"]
-	fmt.Println(secret)
 
 	db, err := gorm.Open(postgres.Open(envMap["POSTGRES_CONN"]), &gorm.Config{})
 	if err != nil {

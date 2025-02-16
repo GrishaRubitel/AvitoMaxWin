@@ -16,6 +16,8 @@ import (
 var secret []byte
 
 func PostAuth(db *gorm.DB, username, password string) (code int, resp string, err error) {
+	var new bool
+
 	if username == "" || password == "" {
 		cl.Log(logrus.InfoLevel, "Wrong username or password", map[string]interface{}{
 			"username": username,
@@ -27,6 +29,7 @@ func PostAuth(db *gorm.DB, username, password string) (code int, resp string, er
 
 	result := db.First(&user, "login = ?", username)
 	if errors.Is(result.Error, gorm.ErrRecordNotFound) {
+		new = true
 		user, err = signInUser(db, username, password)
 		if err != nil {
 			cl.Log(logrus.ErrorLevel, "Internal server error", map[string]interface{}{
@@ -41,7 +44,8 @@ func PostAuth(db *gorm.DB, username, password string) (code int, resp string, er
 		return http.StatusInternalServerError, "", errors.New("error while searching user")
 	}
 
-	if comparePasswords(user.PassHash, password) {
+	// Можно убрать проверку если чел регается
+	if new || comparePasswords(user.PassHash, password) {
 		token, err := generateToken(username)
 		if err != nil {
 			cl.Log(logrus.ErrorLevel, "Internal server error", map[string]interface{}{
