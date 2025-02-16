@@ -58,3 +58,13 @@ func ReadBodyData(c *gin.Context) (int, map[string]string, error) {
 
 	return http.StatusOK, result, nil
 }
+
+func ExtractUsername(ctx *gin.Context) (username string, ok bool) {
+	username, ok = ctx.Keys["username"].(string)
+	if !ok {
+		cl.Log(logrus.ErrorLevel, "Failed to extract username from context", map[string]interface{}{})
+		return "", false
+	}
+
+	return username, true
+}

@@ -3,6 +3,7 @@ package api
 import (
 	cl "avitomaxwin/curloger"
 	models "avitomaxwin/models"
+	"encoding/json"
 	"errors"
 	"net/http"
 	"time"
@@ -54,7 +55,19 @@ func PostAuth(db *gorm.DB, username, password string) (code int, resp string, er
 			return http.StatusInternalServerError, "", errors.New("error while generating jwt token")
 		}
 
-		return http.StatusOK, token, nil
+		respMap := map[string]string{
+			"token": token,
+		}
+
+		resp, err := json.Marshal(respMap)
+		if err != nil {
+			cl.Log(logrus.ErrorLevel, "Internal server error", map[string]interface{}{
+				"error": err,
+			})
+			return http.StatusInternalServerError, "", errors.New("error while generating jwt token")
+		}
+
+		return http.StatusOK, string(resp), nil
 	}
 
 	cl.Log(logrus.WarnLevel, "Error while comparing password hashs", map[string]interface{}{
